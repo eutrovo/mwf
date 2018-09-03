@@ -22,7 +22,7 @@ class Server:
         message = message.decode('utf-8')
         FIRST_LINE = message.split('\r')[0]
         REQUEST_ELEMENTS = message.split(' ')
-        request = {'method': REQUEST_ELEMENTS[0], 'route': REQUEST_ELEMENTS[1], 'ip': address[0]}
+        request = {'method': REQUEST_ELEMENTS[0], 'route': REQUEST_ELEMENTS[1]}
         return request
 
     def _send(self, msg):
@@ -36,11 +36,3 @@ class Server:
         simply closes the connection
         '''
         self._client_socket.close()
-
-if __name__=='__main__':
-    sckt = Server(ip='localhost', port=8000)
-    while True:
-        result = sckt.receive()
-        print(result)
-        sckt._send(b'hello world')
-        sckt.close()
