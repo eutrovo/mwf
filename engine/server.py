@@ -9,7 +9,7 @@ class Server:
         '''
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.bind((kwargs['ip'],kwargs['port']))
-        print('Running on http://localhost:8000/')
+        print(f"Running on http://{kwargs['ip']}:{kwargs['port']}/")
 
     def receive(self):
         '''
@@ -36,3 +36,20 @@ class Server:
         simply closes the connection
         '''
         self._client_socket.close()
+
+class Client:
+
+    def __init__(self, **kwargs):
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sock.connect((kwargs['ip'],kwargs['port']))
+
+    def send(self, msg):
+        self.sock.send(msg)
+
+    def receive(self):
+        msg = self.sock.recv(8192)
+        msg = msg.decode('utf-8')
+        return msg
+
+    def close(self):
+        self.sock.close()
