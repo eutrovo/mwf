@@ -2,7 +2,7 @@ from engine.server import Server
 from engine.control import url_parse
 
 # DEFINING SERVER SOCKET
-sckt = Server(ip='localhost', port=8000)
+sckt = Server(ip='localhost', port=8080)
 
 # SERVER LOOP
 while True:
@@ -13,5 +13,5 @@ while True:
     if parsing_result == 0:
         sckt._send(b"404, page not found")
     else:
-        sckt._send(parsing_result(request))
+        sckt._send(b"Hello world")
     sckt.close()

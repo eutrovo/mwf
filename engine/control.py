@@ -16,6 +16,10 @@ def url_parse(request, url_list = url_list):
             return v
     return 0
 
+def html_render(html):
+
+
+
 class Http_Response:
     def __init__(self, code, html):
         self.code = code
@@ -84,16 +88,24 @@ class Http_Response:
             "511":"Network Authentication Required",
         }
 
-    def response(self):
+    def _template_render(self, html_file):
+        html_raw = open(html_file,'r').read()
+        match = re.search(r"\{\{(...)\}\}", html_raw)
+        for variable in match.groups():
+            html_raw = re.sub(r"\{\{"+f"{varible}"+r"\}\}", html_raw, f"{}")
+            # WORKING ON IT
+
+
+    def render(self):
         now = datetime.datetime.now()
         HTML = open(self.html,"r").read()
         response_element = f'''HTTP/1.1 {code} {CODES[code]}\n
-                     Content-Type: text/html; charset=utf-8\n
-                     Date: {now}\n
-                     Connection: close\n
-                     Content-Length: {len(HTML)}\n
-                     \n
-                     {HTML}'''
+                               Content-Type: text/html; charset=utf-8\n
+                               Date: {now}\n
+                               Connection: close\n
+                               Content-Length: {len(HTML)}\n
+                               \n
+                               {HTML}'''
         return response_element
 
 
