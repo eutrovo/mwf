@@ -16,10 +16,6 @@ def url_parse(request, url_list = url_list):
             return v
     return 0
 
-def html_render(html):
-
-
-
 class Http_Response:
     def __init__(self, code, html):
         self.code = code
@@ -89,11 +85,14 @@ class Http_Response:
         }
 
     def _template_render(self, html_file):
+        #TODO
         html_raw = open(html_file,'r').read()
-        match = re.search(r"\{\{(...)\}\}", html_raw)
-        for variable in match.groups():
-            html_raw = re.sub(r"\{\{"+f"{varible}"+r"\}\}", html_raw, f"{}")
-            # WORKING ON IT
+        match = re.search(r"\{\{(\w+)\}\}", html_raw)
+        for match_ in match.groups():
+            print(match_)
+            print(f"{match_})
+            html_raw = re.sub(match_, html_raw, f"{match_}")
+        return html_raw
 
 
     def render(self):
