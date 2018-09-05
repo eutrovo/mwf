@@ -1,6 +1,7 @@
 from engine.server import Server
 from engine.control import url_parse
 from urls import url_list
+from app.views import error_404
 
 # DEFINING SERVER SOCKET
 sckt = Server(ip='localhost', port=8080)
@@ -13,7 +14,7 @@ while True:
     #parsing_result may be a view function, or 0
     parsing_result = url_parse(request, url_list)
     if parsing_result == 0:
-        sckt._send("HTTP/1.1 404 Not Found\n\n<html><body><center><h3>Error 404: File not found</h3><p>Try elsewhere</p></center></body></html>".encode('utf-8'))
+        sckt._send(error_404(request))
     else:
-        sckt._send(parsing_result(request).encode('utf-8'))
+        sckt._send(parsing_result(request))
     sckt.close()
