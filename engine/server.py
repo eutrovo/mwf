@@ -22,7 +22,10 @@ class Server:
         message = message.decode('utf-8')
         FIRST_LINE = message.split('\r')[0]
         REQUEST_ELEMENTS = message.split(' ')
-        request = {'method': REQUEST_ELEMENTS[0], 'route': REQUEST_ELEMENTS[1]}
+        try:
+            request = {'method': REQUEST_ELEMENTS[0], 'route': REQUEST_ELEMENTS[1]}
+        except:
+            request = {'method': "GET", "route": "/"}
         return request
 
     def _send(self, msg):

@@ -1,9 +1,6 @@
 import re
-from urls import url_list
-import datetime
 
-
-def url_parse(request, url_list = url_list):
+def url_parse(request, url_list):
     ROUTE = request['route']
     if len(ROUTE) > 1:
         PARSED_ROUTE = re.search(rf'^{ROUTE}/?$',ROUTE)
@@ -17,9 +14,7 @@ def url_parse(request, url_list = url_list):
     return 0
 
 class Http_Response:
-    def __init__(self, code, html):
-        self.code = code
-        self.html = html
+    def __init__(self):
         self.CODES = {
             "100":"Continue",
             "101":"Switching Protocol",
@@ -84,36 +79,21 @@ class Http_Response:
             "511":"Network Authentication Required",
         }
 
-    def _template_render(self, html_file):
-        #TODO
-        html_raw = open(html_file,'r').read()
+    def _template_render(self, html_file, variables_dict):
+        '''
+        intend to render html files
+        '''
+        html_file = open(html_file,'r')
+        html_raw = html_file.read()
+        html_file.close()
         match = re.search(r"\{\{(\w+)\}\}", html_raw)
-        for match_ in match.groups():
-            print(match_)
-            print(f"{match_})
-            html_raw = re.sub(match_, html_raw, f"{match_}")
+        if match is not None:
+            for match_ in match.groups():
+                html_raw = re.sub(r"\{\{" + match_ + r"\}\}", f"{variables_dict[match_]}", html_raw)
         return html_raw
 
-
-    def render(self):
-        now = datetime.datetime.now()
-        HTML = open(self.html,"r").read()
-        response_element = f'''HTTP/1.1 {code} {CODES[code]}\n
-                               Content-Type: text/html; charset=utf-8\n
-                               Date: {now}\n
-                               Connection: close\n
-                               Content-Length: {len(HTML)}\n
-                               \n
+    def render(self, html_file, variables_dict={}):
+        HTML = self._template_render(html_file, variables_dict)
+        response_element = f'''HTTP/1.1 200 OK\n\n
                                {HTML}'''
         return response_element
-
-
-
-'''HTTP/1.1 400 Bad Request
-Content-Type: text/html; charset=utf-8
-Date: Mon, 03 Sep 2018 19:12:38 GMT
-Connection: close
-Content-Length: 2959
-
-<!DOCTYPE html>
-'''

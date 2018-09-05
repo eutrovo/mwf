@@ -1,5 +1,9 @@
+from engine.control import Http_Response
+
 def world(request):
-    return b"Hello, world"
+    a = Http_Response()
+    return a.render("templates/success_page.html")
 
 def index(request):
-    return b"Hello, time"
+    a = Http_Response()
+    return a.render("templates/error_page.html", {"code":404})
