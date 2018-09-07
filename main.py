@@ -16,6 +16,7 @@ while True:
         if parsing_result == 0:
             sckt._send(error_404(request))
         else:
+            print(parsing_result(request))
             sckt._send(parsing_result(request))
         sckt.close()
     except:
