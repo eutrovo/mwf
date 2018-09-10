@@ -41,7 +41,6 @@ class Mgmt:
             SET {kv_items}
             WHERE {filter};''')
 
-
     def delete(self, table, filter):
         self.cursor.execute(f"DELETE FROM {table} WHERE {filter}")
 
