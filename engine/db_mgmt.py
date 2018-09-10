@@ -32,10 +32,15 @@ class Mgmt:
         self.cursor.execute(query)
         return self.cursor.fetchone()
 
-    def update(self, cols, values):
-        self.cusor.execute(f'''UPDATE table_name
-            SET column1 = value1, column2 = value2,
-            WHERE condition;''')
+    def update(self, table, cols_values_dict, filter):
+        kv_items = ""
+        for k,v in cols_values_dict.items():
+            kv_items += f" {k} = {v},"
+        kv_items = kv_items[:-1]
+        self.cusor.execute(f'''UPDATE {table}
+            SET {kv_items}
+            WHERE {filter};''')
+
 
     def delete(self, table, filter):
         self.cursor.execute(f"DELETE FROM {table} WHERE {filter}")
