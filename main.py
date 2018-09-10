@@ -12,25 +12,11 @@ def reload_all(installed_apps):
 
 # DEFINING SERVER SOCKET
 sckt = Server(ip='localhost', port=8080)
-
 # SERVER LOOP
 while True:
-    request = sckt.receive()
-    try:
-        #parsing_result may be a view function, or 0
-        parsing_result = url_parse(request, url_list)
-        if parsing_result == 0:
-            sckt._send(error_404(request))
-        else:
-            try:
-                sckt._send(parsing_result(request))
-            except:
-                print(parsing_result(request))
-                sckt._send(parsing_result(request).encode('utf-8'))
-        sckt.close()
-        reload_all(installed_apps)
-    except:
-        #insert some error massage below and
-        #add error types to except args
-        sckt.close()
-        raise NameError('Something wrong occurred')
+    client_socket = sckt.listen_accept()
+    sckt.handle_client(client_socket,
+                        url_parse,
+                        url_list,
+                        error_404)
+    reload_all(installed_apps)

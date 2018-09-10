@@ -35,6 +35,7 @@ def static_view(request):
         static_file.close()
         return f"HTTP/1.1 200 OK\n\
                  {content_type}\n\
+                 Connection: close\n\
                  Content-Length: {len(static_raw)}\n\n\
                  {static_raw}"
     except:
@@ -51,5 +52,6 @@ def render(html_file, variables_dict={}):
                               f"{variables_dict[match_]}", html_raw)
     return f"HTTP/1.1 200 OK\n\
              Content-Type: text/html; charset=utf-8\n\
+             Connection: close\n\
              Content-Length: {len(html_raw)}\n\n\
              {html_raw}".encode('utf-8')
