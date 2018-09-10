@@ -1,16 +1,14 @@
 import re
 
+def url(pattern, view):
+    return [pattern, view]
+
+
 def url_parse(request, url_list):
-    ROUTE = request['route']
-    if len(ROUTE) > 1:
-        PARSED_ROUTE = re.search(rf'^{ROUTE}/?$',ROUTE)
-        STR_ROUTE = PARSED_ROUTE.group(0)
-        if PARSED_ROUTE and STR_ROUTE[-1] == "/":
-            STR_ROUTE = STR_ROUTE[:-1]
-        ROUTE = STR_ROUTE
-    for k,v in url_list.items():
-        if k == ROUTE:
-            return v
+    for url in url_list:
+        matches = re.search(url[0], request['route'])
+        if matches is not None:
+            return url[1]
     return 0
 
 def static_view(request):
@@ -18,7 +16,7 @@ def static_view(request):
     if ROUTE[-1] == '/':
         ROUTE = ROUTE[:-1]
     elements = ROUTE.split("/")
-    extension = elements[2].split('.')[1]
+    extension = elements[3].split('.')[1]
     content_type = "Content-Type: "
     if extension in ("gif","jpeg","png","svg","bmp","webp"):
         content_type += f"image/{extension}"
@@ -31,13 +29,14 @@ def static_view(request):
     elif extension == "js":
         content_type += "application/javascript"
     try:
-        static_file = open(f"{elements[1]}/{elements[2]}",'r')
+        print(content_type)
+        static_file = open(f"static/{elements[2]}/{elements[3]}",'r')
         static_raw = static_file.read()
         static_file.close()
-        return f'''HTTP/1.1 200 OK\n
-                   {content_type}\n
-                   Content-Length: {len(static_raw)}\n\n
-                   {static_raw}'''
+        return f"HTTP/1.1 200 OK\n\
+                 {content_type}\n\
+                 Content-Length: {len(static_raw)}\n\n\
+                 {static_raw}"
     except:
         return "HTTP/1.1 400 Bad Request"
 
@@ -48,7 +47,8 @@ def render(html_file, variables_dict={}):
     match = re.search(r"\{\{(\w+)\}\}", html_raw)
     if match is not None:
         for match_ in match.groups():
-            html_raw = re.sub(r"\{\{" + match_ + r"\}\}", f"{variables_dict[match_]}", html_raw)
+            html_raw = re.sub(r"\{\{" + match_ + r"\}\}",
+                              f"{variables_dict[match_]}", html_raw)
     return f"HTTP/1.1 200 OK\n\
              Content-Type: text/html; charset=utf-8\n\
              Content-Length: {len(html_raw)}\n\n\
