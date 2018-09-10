@@ -4,6 +4,6 @@ from engine.control import url, static_view
 
 # new
 url_list = [
-    url(r"^/$", views.world),
+    url(r"^/$", views.index),
     url(r"^/static/(\w+)/", static_view)
 ]

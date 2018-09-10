@@ -11,7 +11,7 @@ def reload_all(installed_apps):
         importlib.reload(module_)
 
 # DEFINING SERVER SOCKET
-sckt = Server(ip='localhost', port=8080)
+sckt = Server(ip='localhost', port=8081)
 # SERVER LOOP
 while True:
     client_socket = sckt.listen_accept()

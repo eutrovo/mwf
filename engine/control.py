@@ -29,7 +29,6 @@ def static_view(request):
     elif extension == "js":
         content_type += "application/javascript"
     try:
-        print(content_type)
         static_file = open(f"static/{elements[2]}/{elements[3]}",'r')
         static_raw = static_file.read()
         static_file.close()
