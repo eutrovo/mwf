@@ -19,14 +19,14 @@ class Mgmt:
         self.cursor.execute(f'''INSERT INTO {table} {cols}
                                 VALUES {values};''')
 
-    def read(self, cols, table, filter = ''):
+    def read(self, cols, table, col = '', filter = ''):
         '''
         table must be string, cols must be tuple
         '''
         query = f'''SELECT {cols}
                     FROM {table}'''
-        if filter:
-            query += f" WITH {filter};"
+        if col and filter:
+            query += f" WITH {col} AS {filter};"
         else:
             query += ";"
         self.cursor.execute(query)

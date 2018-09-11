@@ -41,22 +41,18 @@ class Server:
                         url_list,
                         error_404):
         http_request = self.receive(client_socket).decode('utf-8')
-        request_elements = http_request.split('\r\n')[0]\
-                                       .split(' ')
-        try:
-            request = {'method': request_elements[0],
-                       'route': request_elements[1]}
-        except:
-            request = {'method': "GET", "route": "/"}
         #parsing_result may be a view function, or 0
-        parsing_result = url_parse(request, url_list)
+        parsing_result = url_parse(http_request, url_list)
         if parsing_result == 0:
-            self.send(client_socket,error_404(request))
+            self.send(client_socket, error_404(parsing_result))
         else:
             try:
-                self.send(client_socket,parsing_result(request))
+                self.send(client_socket, parsing_result["view"](
+                parsing_result)
+                )
                 self.close(client_socket)
             except TypeError:
-                self.send(client_socket,parsing_result(request)\
-                                                .encode('utf-8'))
+                self.send(client_socket, parsing_result["view"](
+                parsing_result).encode('utf-8')
+                )
                 self.close(client_socket)
