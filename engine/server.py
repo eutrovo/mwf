@@ -11,48 +11,48 @@ class Server:
         self.sock.bind((kwargs['ip'],kwargs['port']))
         print(f"Running on http://{kwargs['ip']}:{kwargs['port']}/")
 
-    def receive(self):
+    def listen_accept(self):
+        self.sock.listen(5)
+        (client_socket, address) = self.sock.accept()
+        print(f'{address} connected')
+        return client_socket
+
+    def receive(self, client_socket):
         '''
         Get the request from user and slices it into important chunks
         '''
-        self.sock.listen(5)
-        (self._client_socket, address) = self.sock.accept()
-        print(f'{address} connected')
-        message = self._client_socket.recv(8192)
-        message = message.decode('utf-8')
-        FIRST_LINE = message.split('\r')[0]
-        REQUEST_ELEMENTS = message.split(' ')
-        try:
-            request = {'method': REQUEST_ELEMENTS[0], 'route': REQUEST_ELEMENTS[1]}
-        except:
-            request = {'method': "GET", "route": "/"}
-        return request
+        return client_socket.recv(8192)
 
-    def _send(self, msg):
+    def send(self, client_socket, msg):
         '''
         sends a response from a view
         '''
-        self._client_socket.send(msg)
+        client_socket.send(msg)
 
-    def close(self):
+    def close(self, client_socket):
         '''
         simply closes the connection
         '''
-        self._client_socket.close()
-
-class Client:
-
-    def __init__(self, **kwargs):
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.connect((kwargs['ip'],kwargs['port']))
-
-    def send(self, msg):
-        self.sock.send(msg)
-
-    def receive(self):
-        msg = self.sock.recv(8192)
-        msg = msg.decode('utf-8')
-        return msg
-
-    def close(self):
-        self.sock.close()
+        client_socket.shutdown(1)
+        client_socket.close()
+    def handle_client(self,
+                        client_socket,
+                        url_parse,
+                        url_list,
+                        error_404):
+        http_request = self.receive(client_socket).decode('utf-8')
+        #parsing_result may be a view function, or 0
+        parsing_result = url_parse(http_request, url_list)
+        if parsing_result == 0:
+            self.send(client_socket, error_404(parsing_result))
+        else:
+            try:
+                self.send(client_socket, parsing_result["view"](
+                parsing_result)
+                )
+                self.close(client_socket)
+            except TypeError:
+                self.send(client_socket, parsing_result["view"](
+                parsing_result).encode('utf-8')
+                )
+                self.close(client_socket)
